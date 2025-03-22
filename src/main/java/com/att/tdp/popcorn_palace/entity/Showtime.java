@@ -3,7 +3,6 @@ package com.att.tdp.popcorn_palace.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -25,5 +24,5 @@ public class Showtime {
     private String theater;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private BigDecimal price;
+    private Double price;
 }

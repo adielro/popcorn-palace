@@ -3,7 +3,6 @@ package com.att.tdp.popcorn_palace.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -29,5 +28,5 @@ public class ShowtimeDto {
     private LocalDateTime endTime;
 
     @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")
-    private BigDecimal price;
+    private Double price;
 }

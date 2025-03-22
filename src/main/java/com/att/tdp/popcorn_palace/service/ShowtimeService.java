@@ -3,6 +3,7 @@ package com.att.tdp.popcorn_palace.service;
 import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
 import com.att.tdp.popcorn_palace.entity.Showtime;
+import com.att.tdp.popcorn_palace.exception.ShowtimeOverlapException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class ShowtimeService {
                         dto.getTheater(), dto.getEndTime(), dto.getStartTime());
 
         if (!overlapping.isEmpty()) {
-            throw new RuntimeException("Showtime overlaps with an existing one in this theater.");
+            throw new ShowtimeOverlapException("Showtime would overlap with an existing one.");
         }
 
         Showtime showtime = Showtime.builder()
@@ -97,7 +98,7 @@ public class ShowtimeService {
     
         boolean overlaps = overlapping.stream().anyMatch(s -> !s.getId().equals(id));
         if (overlaps) {
-            throw new RuntimeException("Updated showtime would overlap with an existing one.");
+            throw new ShowtimeOverlapException("Showtime would overlap with an existing one.");
         }
     
         existing.setMovieId(dto.getMovieId());
