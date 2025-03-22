@@ -2,6 +2,8 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
+import com.att.tdp.popcorn_palace.exception.MovieAlreadyExistsException;
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,11 +33,11 @@ public class MovieService {
      *
      * @param dto the movie data to add
      * @return the saved movie entity
-     * @throws RuntimeException if the movie title already exists
+     * @throws MovieAlreadyExistsException if a movie with the same title already exists
      */
     public Movie addMovie(MovieDto dto) {
         if (movieRepository.existsByTitle(dto.getTitle())) {
-            throw new RuntimeException("Movie with this title already exists.");
+            throw new MovieAlreadyExistsException("Movie with this title already exists.");
         }
 
         Movie movie = Movie.builder()
@@ -55,11 +57,11 @@ public class MovieService {
      * @param title the current title of the movie
      * @param dto   the updated movie details
      * @return the updated movie entity
-     * @throws RuntimeException if the movie is not found
+     * @throws MovieNotFoundException if the movie is not found
      */
     public Movie updateMovie(String title, MovieDto dto) {
         Movie existing = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundException("The movie " + title + " not found"));
 
         existing.setTitle(dto.getTitle());
         existing.setGenre(dto.getGenre());
@@ -74,11 +76,11 @@ public class MovieService {
      * Deletes a movie by its title.
      *
      * @param title the title of the movie to delete
-     * @throws RuntimeException if the movie is not found
+     * @throws MovieNotFoundException if the movie is not found
      */
     public void deleteMovie(String title) {
         if (!movieRepository.existsByTitle(title)) {
-            throw new RuntimeException("Movie not found");
+            throw new MovieNotFoundException("The movie " + title + " not found");
         }
         movieRepository.deleteByTitle(title);
     }

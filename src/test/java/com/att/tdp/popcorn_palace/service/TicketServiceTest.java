@@ -2,6 +2,8 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.TicketDto;
 import com.att.tdp.popcorn_palace.entity.Ticket;
+import com.att.tdp.popcorn_palace.exception.SeatAlreadyTakenException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.repository.TicketRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,12 +75,10 @@ class TicketServiceTest {
         // Mock saving the ticket
         when(ticketRepository.save(any(Ticket.class))).thenReturn(savedTicket);
 
-        // Expect a RuntimeException to be thrown due to seat being taken
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        // Expect a SeatAlreadyTakenException to be thrown due to seat being taken
+        assertThrows(SeatAlreadyTakenException.class, () -> {
             ticketService.bookTicket(ticketDto);  // Seat is already taken
         });
-
-        assertEquals("Seat is already taken", exception.getMessage());
     }
 
     // Test: Booking a ticket for a non-existent showtime
@@ -86,11 +86,9 @@ class TicketServiceTest {
     void testBookTicketForNonExistentShowtime() {
         when(showtimeRepository.existsById(anyLong())).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(ShowtimeNotFoundException.class, () -> {
             ticketService.bookTicket(ticketDto);  // Showtime doesn't exist
         });
-
-        assertEquals("Showtime not found", exception.getMessage());
     }
 
     // Test: Check if seat availability works correctly

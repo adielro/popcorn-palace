@@ -3,6 +3,10 @@ package com.att.tdp.popcorn_palace.service;
 import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
 import com.att.tdp.popcorn_palace.entity.Showtime;
+import com.att.tdp.popcorn_palace.exception.InvalidStartEndTimeException;
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeDurationException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.exception.ShowtimeOverlapException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
@@ -31,16 +35,16 @@ public class ShowtimeService {
      */
     public Showtime addShowtime(ShowtimeDto dto) {
         if (dto.getStartTime().isAfter(dto.getEndTime()) || dto.getStartTime().equals(dto.getEndTime())) {
-            throw new RuntimeException("Start time must be before end time.");
+            throw new InvalidStartEndTimeException("Start time must be before end time.");
         }
 
         // Validate showtime fits movie duration
         Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundException("Movie not found"));
 
         long availableMinutes = Duration.between(dto.getStartTime(), dto.getEndTime()).toMinutes();
         if (availableMinutes < movie.getDuration()) {
-            throw new RuntimeException("Showtime must be at least " + movie.getDuration() + " minutes long to fit the movie.");
+            throw new ShowtimeDurationException("Showtime must be at least " + movie.getDuration() + " minutes long to fit the movie.");
         }
 
         // Check for overlaps (after time validation)
@@ -68,7 +72,7 @@ public class ShowtimeService {
      */
     public Showtime getShowtimeById(Long id) {
         return showtimeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+                .orElseThrow(() -> new ShowtimeNotFoundException("Showtime not found"));
     }
 
     /**
@@ -76,19 +80,19 @@ public class ShowtimeService {
      */
     public Showtime updateShowtime(Long id, ShowtimeDto dto) {
         Showtime existing = showtimeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+                .orElseThrow(() -> new ShowtimeNotFoundException("Showtime not found"));
     
         if (dto.getStartTime().isAfter(dto.getEndTime()) || dto.getStartTime().equals(dto.getEndTime())) {
-            throw new RuntimeException("Start time must be before end time.");
+            throw new InvalidStartEndTimeException("Start time must be before end time.");
         }
     
         // Validate against movie duration
         Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundException("Movie not found"));
     
         long availableMinutes = Duration.between(dto.getStartTime(), dto.getEndTime()).toMinutes();
         if (availableMinutes < movie.getDuration()) {
-            throw new RuntimeException("Showtime must be at least " + movie.getDuration() + " minutes long to fit the movie.");
+            throw new ShowtimeDurationException("Showtime must be at least " + movie.getDuration() + " minutes long to fit the movie.");
         }
     
         // Check for overlaps
@@ -115,7 +119,7 @@ public class ShowtimeService {
      */
     public void deleteShowtime(Long id) {
         if (!showtimeRepository.existsById(id)) {
-            throw new RuntimeException("Showtime not found");
+            throw new ShowtimeNotFoundException("Showtime not found");
         }
         showtimeRepository.deleteById(id);
     }

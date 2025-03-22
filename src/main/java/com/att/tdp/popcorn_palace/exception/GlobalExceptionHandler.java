@@ -15,6 +15,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Handle generic RuntimeException
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntime(RuntimeException ex) {
         return ResponseEntity
@@ -26,6 +27,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    // Handle validation errors
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -40,6 +42,79 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    // Handle MovieAlreadyExistsException
+    @ExceptionHandler(MovieAlreadyExistsException.class)
+    public ResponseEntity<?> handleMovieAlreadyExists(MovieAlreadyExistsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 400,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle MovieNotFoundException
+    @ExceptionHandler(MovieNotFoundException.class)
+    public ResponseEntity<?> handleMovieNotFound(MovieNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 404,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle InvalidStartEndTimeException
+    @ExceptionHandler(InvalidStartEndTimeException.class)
+    public ResponseEntity<?> handleInvalidStartEndTime(InvalidStartEndTimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 400,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle ShowtimeDurationException
+    @ExceptionHandler(ShowtimeDurationException.class)
+    public ResponseEntity<?> handleShowtimeDuration(ShowtimeDurationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 400,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle ShowtimeNotFoundException
+    @ExceptionHandler(ShowtimeNotFoundException.class)
+    public ResponseEntity<?> handleShowtimeNotFound(ShowtimeNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 404,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle SeatAlreadyTakenException
+    @ExceptionHandler(SeatAlreadyTakenException.class)
+    public ResponseEntity<?> handleSeatAlreadyTaken(SeatAlreadyTakenException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 400,
+                        "error", ex.getMessage()
+                ));
+    }
+
+    // Handle ShowtimeOverlapException
     @ExceptionHandler(ShowtimeOverlapException.class)
     public ResponseEntity<?> handleShowtimeOverlap(ShowtimeOverlapException ex) {
         return ResponseEntity

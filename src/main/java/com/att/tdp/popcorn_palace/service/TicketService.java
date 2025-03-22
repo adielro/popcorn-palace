@@ -2,6 +2,8 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.TicketDto;
 import com.att.tdp.popcorn_palace.entity.Ticket;
+import com.att.tdp.popcorn_palace.exception.SeatAlreadyTakenException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.repository.TicketRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +29,12 @@ public class TicketService {
     public Ticket bookTicket(TicketDto dto) {
         // Check if the showtime exists
         if (!showtimeRepository.existsById(dto.getShowtimeId())) {
-            throw new RuntimeException("Showtime not found");
+            throw new ShowtimeNotFoundException("Showtime not found");
         }
 
         // Check if the seat is already booked
         if (checkSeatAvailability(dto.getShowtimeId(), dto.getSeatNumber())) {
-            throw new RuntimeException("Seat is already taken");
+            throw new SeatAlreadyTakenException("Seat is already taken");
         }
 
         // Create and save the ticket

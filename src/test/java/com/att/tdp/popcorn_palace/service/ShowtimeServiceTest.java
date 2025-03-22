@@ -2,6 +2,7 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
 import com.att.tdp.popcorn_palace.entity.Showtime;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.exception.ShowtimeOverlapException;
 import com.att.tdp.popcorn_palace.entity.Movie;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
@@ -120,10 +121,8 @@ class ShowtimeServiceTest {
     void testDeleteShowtimeNotFound() {
         when(showtimeRepository.existsById(1L)).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(ShowtimeNotFoundException.class, () -> {
             showtimeService.deleteShowtime(1L);
         });
-
-        assertEquals("Showtime not found", exception.getMessage());
     }
 }

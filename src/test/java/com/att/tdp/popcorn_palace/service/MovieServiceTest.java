@@ -2,6 +2,8 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
+import com.att.tdp.popcorn_palace.exception.MovieAlreadyExistsException;
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,11 +53,9 @@ class MovieServiceTest {
     void testAddMovieWithDuplicateTitle() {
         when(movieRepository.existsByTitle(movieDto.getTitle())).thenReturn(true);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(MovieAlreadyExistsException.class, () -> {
             movieService.addMovie(movieDto);
         });
-
-        assertEquals("Movie with this title already exists.", exception.getMessage());
     }
 
     // Test retrieving all movies
@@ -90,11 +90,9 @@ class MovieServiceTest {
         MovieDto updateDto = new MovieDto("Moana 3", "Family", 110, 7.5, 2025);
         when(movieRepository.findByTitle("Moana 2")).thenReturn(java.util.Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(MovieNotFoundException.class, () -> {
             movieService.updateMovie("Moana 2", updateDto);
         });
-
-        assertEquals("Movie not found", exception.getMessage());
     }
 
     // Test deleting a movie
@@ -112,10 +110,8 @@ class MovieServiceTest {
     void testDeleteMovieNotFound() {
         when(movieRepository.existsByTitle("Moana 2")).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(MovieNotFoundException.class, () -> {
             movieService.deleteMovie("Moana 2");
         });
-
-        assertEquals("Movie not found", exception.getMessage());
     }
 }
